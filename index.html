@@ -1,0 +1,728 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Controle de Gastos — Painel</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
+  <style>
+    /* ==========================
+       Base / Reset (limpo e pequeno)
+       ========================== */
+    :root{
+      --bg: #0b1220;
+      --surface: #121b2f;
+      --surface-2: #16213a;
+      --text: #e9eefc;
+      --muted: #a9b4d6;
+      --border: rgba(255,255,255,.08);
+      --shadow: 0 10px 30px rgba(0,0,0,.35);
+
+      --accent: #7c5cff;
+      --ok: #20c997;
+      --warn: #ffcc00;
+      --danger: #ff5c7a;
+
+      --radius: 16px;
+      --radius-sm: 12px;
+      --gap: 16px;
+
+      --container: 1120px;
+    }
+
+    * { box-sizing: border-box; }
+    html, body { height: 100%; }
+    body{
+      margin: 0;
+      font-family: "Inter", system-ui, -apple-system, Segoe UI, Roboto, Arial, sans-serif;
+      background: radial-gradient(1200px 600px at 10% 0%, rgba(124,92,255,.22), transparent 55%),
+                  radial-gradient(1000px 600px at 80% 10%, rgba(32,201,151,.14), transparent 60%),
+                  var(--bg);
+      color: var(--text);
+      line-height: 1.4;
+    }
+
+    a{ color: inherit; text-decoration: none; }
+    button, input, select { font: inherit; }
+
+    /* ==========================
+       Layout
+       ========================== */
+    .app{
+      min-height: 100%;
+      display: grid;
+      grid-template-columns: 280px 1fr;
+    }
+
+    .sidebar{
+      border-right: 1px solid var(--border);
+      background: linear-gradient(180deg, rgba(18,27,47,.85), rgba(18,27,47,.55));
+      backdrop-filter: blur(10px);
+      padding: 22px;
+      position: sticky;
+      top: 0;
+      height: 100vh;
+    }
+
+    .content{
+      padding: 26px 18px 40px;
+    }
+
+    .container{
+      max-width: var(--container);
+      margin: 0 auto;
+      display: grid;
+      gap: 18px;
+    }
+
+    @media (max-width: 960px){
+      .app{ grid-template-columns: 1fr; }
+      .sidebar{
+        position: relative;
+        height: auto;
+        border-right: 0;
+        border-bottom: 1px solid var(--border);
+      }
+    }
+
+    /* ==========================
+       Sidebar
+       ========================== */
+    .brand{
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      margin-bottom: 18px;
+    }
+
+    .brand__logo{
+      width: 40px;
+      height: 40px;
+      border-radius: 12px;
+      background: linear-gradient(135deg, rgba(124,92,255,.95), rgba(32,201,151,.8));
+      box-shadow: var(--shadow);
+    }
+
+    .brand__title{
+      font-weight: 600;
+      font-size: 16px;
+      letter-spacing: .2px;
+    }
+
+    .brand__subtitle{
+      display: block;
+      margin-top: 2px;
+      color: var(--muted);
+      font-weight: 400;
+      font-size: 12px;
+    }
+
+    .nav{
+      display: grid;
+      gap: 8px;
+      margin-top: 14px;
+    }
+
+    .nav__item{
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 10px 12px;
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      background: rgba(255,255,255,.03);
+    }
+
+    .nav__item--active{
+      border-color: rgba(124,92,255,.55);
+      background: rgba(124,92,255,.12);
+    }
+
+    .nav__label{
+      display: inline-flex;
+      align-items: center;
+      gap: 10px;
+      color: var(--text);
+      font-weight: 500;
+      font-size: 14px;
+    }
+
+    .pill{
+      font-size: 12px;
+      padding: 4px 8px;
+      border-radius: 999px;
+      border: 1px solid var(--border);
+      color: var(--muted);
+      background: rgba(255,255,255,.03);
+    }
+
+    .sidebar__footer{
+      margin-top: 18px;
+      padding-top: 16px;
+      border-top: 1px solid var(--border);
+      color: var(--muted);
+      font-size: 12px;
+    }
+
+    /* ==========================
+       Topbar
+       ========================== */
+    .topbar{
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 12px;
+      padding: 14px 16px;
+      border: 1px solid var(--border);
+      background: rgba(18,27,47,.55);
+      border-radius: var(--radius);
+      box-shadow: var(--shadow);
+    }
+
+    .topbar__left{
+      display: grid;
+      gap: 2px;
+    }
+
+    .topbar__title{
+      font-size: 18px;
+      font-weight: 600;
+    }
+
+    .topbar__meta{
+      color: var(--muted);
+      font-size: 13px;
+    }
+
+    .topbar__right{
+      display: flex;
+      gap: 10px;
+      align-items: center;
+    }
+
+    .chip{
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      padding: 8px 10px;
+      border-radius: 999px;
+      border: 1px solid var(--border);
+      background: rgba(255,255,255,.03);
+      color: var(--muted);
+      font-size: 13px;
+      white-space: nowrap;
+    }
+
+    .chip strong{ color: var(--text); font-weight: 600; }
+
+    .btn{
+      border: 1px solid var(--border);
+      background: rgba(255,255,255,.04);
+      color: var(--text);
+      padding: 10px 12px;
+      border-radius: 12px;
+      cursor: pointer;
+      transition: transform .08s ease, border-color .12s ease, background .12s ease;
+    }
+
+    .btn:hover{
+      border-color: rgba(124,92,255,.6);
+      background: rgba(124,92,255,.10);
+    }
+
+    .btn:active{ transform: translateY(1px); }
+
+    .btn--primary{
+      border-color: rgba(124,92,255,.6);
+      background: rgba(124,92,255,.18);
+    }
+
+    /* ==========================
+       Cards / Sections
+       ========================== */
+    .grid{
+      display: grid;
+      grid-template-columns: 1.25fr .75fr;
+      gap: 18px;
+    }
+
+    @media (max-width: 1100px){
+      .grid{ grid-template-columns: 1fr; }
+    }
+
+    .card{
+      border: 1px solid var(--border);
+      background: rgba(18,27,47,.55);
+      border-radius: var(--radius);
+      box-shadow: var(--shadow);
+      overflow: hidden;
+    }
+
+    .card__header{
+      padding: 16px 16px 10px;
+      border-bottom: 1px solid var(--border);
+      display: flex;
+      align-items: end;
+      justify-content: space-between;
+      gap: 12px;
+    }
+
+    .card__title{
+      font-weight: 600;
+      font-size: 15px;
+    }
+
+    .card__subtitle{
+      color: var(--muted);
+      font-size: 13px;
+      margin-top: 2px;
+    }
+
+    .card__body{
+      padding: 16px;
+    }
+
+    /* ==========================
+       KPI row
+       ========================== */
+    .kpis{
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 12px;
+    }
+
+    @media (max-width: 700px){
+      .kpis{ grid-template-columns: 1fr; }
+    }
+
+    .kpi{
+      border: 1px solid var(--border);
+      background: rgba(255,255,255,.03);
+      border-radius: 14px;
+      padding: 14px;
+      display: grid;
+      gap: 6px;
+    }
+
+    .kpi__label{
+      color: var(--muted);
+      font-size: 12px;
+    }
+
+    .kpi__value{
+      font-weight: 700;
+      font-size: 20px;
+      letter-spacing: .2px;
+    }
+
+    .kpi__hint{
+      color: var(--muted);
+      font-size: 12px;
+    }
+
+    /* ==========================
+       Form
+       ========================== */
+    .form{
+      display: grid;
+      gap: 12px;
+    }
+
+    .form__row{
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 12px;
+    }
+
+    @media (max-width: 700px){
+      .form__row{ grid-template-columns: 1fr; }
+    }
+
+    .field{
+      display: grid;
+      gap: 6px;
+    }
+
+    .field__label{
+      color: var(--muted);
+      font-size: 12px;
+    }
+
+    .input, .select{
+      width: 100%;
+      padding: 11px 12px;
+      border-radius: 12px;
+      border: 1px solid var(--border);
+      background: rgba(0,0,0,.18);
+      color: var(--text);
+      outline: none;
+      transition: border-color .12s ease;
+    }
+
+    .input:focus, .select:focus{
+      border-color: rgba(124,92,255,.75);
+    }
+
+    .form__actions{
+      display: flex;
+      gap: 10px;
+      justify-content: flex-end;
+      flex-wrap: wrap;
+    }
+
+    /* ==========================
+       Table / list
+       ========================== */
+    .table{
+      width: 100%;
+      border-collapse: collapse;
+      overflow: hidden;
+      border-radius: 14px;
+      border: 1px solid var(--border);
+    }
+
+    .table th, .table td{
+      text-align: left;
+      padding: 10px 12px;
+      border-bottom: 1px solid var(--border);
+      font-size: 13px;
+    }
+
+    .table th{
+      color: var(--muted);
+      font-weight: 600;
+      background: rgba(255,255,255,.03);
+      position: sticky;
+      top: 0;
+    }
+
+    .table tr:hover td{
+      background: rgba(124,92,255,.07);
+    }
+
+    .tag{
+      display: inline-flex;
+      align-items: center;
+      padding: 4px 8px;
+      border-radius: 999px;
+      font-size: 12px;
+      border: 1px solid var(--border);
+      background: rgba(255,255,255,.03);
+      color: var(--muted);
+      white-space: nowrap;
+    }
+
+    .tag--ok{ border-color: rgba(32,201,151,.45); color: #bff3e4; background: rgba(32,201,151,.10); }
+    .tag--warn{ border-color: rgba(255,204,0,.45); color: #fff2b3; background: rgba(255,204,0,.10); }
+    .tag--danger{ border-color: rgba(255,92,122,.45); color: #ffd0d8; background: rgba(255,92,122,.10); }
+
+    /* ==========================
+       Category breakdown
+       ========================== */
+    .cats{
+      display: grid;
+      gap: 10px;
+    }
+
+    .cat{
+      border: 1px solid var(--border);
+      background: rgba(255,255,255,.03);
+      border-radius: 14px;
+      padding: 12px;
+      display: grid;
+      gap: 10px;
+    }
+
+    .cat__top{
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 10px;
+    }
+
+    .cat__name{
+      font-weight: 600;
+      font-size: 13px;
+    }
+
+    .cat__amount{
+      color: var(--muted);
+      font-size: 13px;
+      white-space: nowrap;
+    }
+
+    .bar{
+      height: 10px;
+      border-radius: 999px;
+      background: rgba(255,255,255,.08);
+      overflow: hidden;
+      border: 1px solid rgba(255,255,255,.06);
+    }
+
+    .bar__fill{
+      height: 100%;
+      width: var(--w, 0%);
+      border-radius: 999px;
+      background: linear-gradient(90deg, rgba(124,92,255,.95), rgba(32,201,151,.9));
+    }
+
+    /* ==========================
+       Small helpers
+       ========================== */
+    .muted{ color: var(--muted); }
+    .sep{ height: 1px; background: var(--border); margin: 12px 0; }
+  </style>
+</head>
+
+<body>
+  <div class="app">
+    <!-- Sidebar -->
+    <aside class="sidebar">
+      <div class="brand">
+        <div class="brand__logo" aria-hidden="true"></div>
+        <div>
+          <div class="brand__title">Gastos do Dia <span class="brand__subtitle">controle simples e rápido</span></div>
+        </div>
+      </div>
+
+      <nav class="nav" aria-label="Navegação principal">
+        <a class="nav__item nav__item--active" href="#">
+          <span class="nav__label">🏠 Painel</span>
+          <span class="pill">Hoje</span>
+        </a>
+        <a class="nav__item" href="#">
+          <span class="nav__label">📅 Histórico</span>
+          <span class="pill">30d</span>
+        </a>
+        <a class="nav__item" href="#">
+          <span class="nav__label">🏷️ Categorias</span>
+          <span class="pill">8</span>
+        </a>
+        <a class="nav__item" href="#">
+          <span class="nav__label">⚙️ Configurações</span>
+          <span class="pill">—</span>
+        </a>
+      </nav>
+
+      <div class="sidebar__footer">
+        <div><strong class="muted">Dica:</strong> lance gastos na hora pra não esquecer.</div>
+      </div>
+    </aside>
+
+    <!-- Content -->
+    <main class="content">
+      <div class="container">
+        <!-- Topbar -->
+        <header class="topbar">
+          <div class="topbar__left">
+            <div class="topbar__title">Painel do Dia</div>
+            <div class="topbar__meta">Segunda-feira • 09/02/2026</div>
+          </div>
+
+          <div class="topbar__right">
+            <div class="chip">Orçamento do dia: <strong>R$ 120,00</strong></div>
+            <button class="btn" type="button">Exportar resumo</button>
+            <button class="btn btn--primary" type="button">Fechar dia</button>
+          </div>
+        </header>
+
+        <section class="grid">
+          <!-- Left column: KPIs + Expenses list -->
+          <div class="card">
+            <div class="card__header">
+              <div>
+                <div class="card__title">Resumo de hoje</div>
+                <div class="card__subtitle">Visão rápida do que já saiu do bolso</div>
+              </div>
+              <span class="tag tag--warn">Parcial</span>
+            </div>
+
+            <div class="card__body">
+              <div class="kpis" role="list">
+                <div class="kpi" role="listitem">
+                  <div class="kpi__label">Total gasto</div>
+                  <div class="kpi__value">R$ 78,50</div>
+                  <div class="kpi__hint">Restante: <strong>R$ 41,50</strong></div>
+                </div>
+
+                <div class="kpi" role="listitem">
+                  <div class="kpi__label">Lançamentos</div>
+                  <div class="kpi__value">5</div>
+                  <div class="kpi__hint">Média: <strong>R$ 15,70</strong></div>
+                </div>
+
+                <div class="kpi" role="listitem">
+                  <div class="kpi__label">Maior categoria</div>
+                  <div class="kpi__value">Alimentação</div>
+                  <div class="kpi__hint"><strong>R$ 42,00</strong> (54%)</div>
+                </div>
+              </div>
+
+              <div class="sep"></div>
+
+              <div class="card__title" style="font-size:14px;">Gastos registrados</div>
+              <div class="muted" style="font-size:13px; margin-top:4px;">Ordenados do mais recente para o mais antigo</div>
+
+              <div style="margin-top:12px; max-height: 320px; overflow:auto; border-radius: 14px;">
+                <table class="table" aria-label="Tabela de gastos do dia">
+                  <thead>
+                    <tr>
+                      <th>Hora</th>
+                      <th>Descrição</th>
+                      <th>Categoria</th>
+                      <th style="text-align:right;">Valor</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    <tr>
+                      <td>19:10</td>
+                      <td>Mercado</td>
+                      <td><span class="tag tag--warn">Alimentação</span></td>
+                      <td style="text-align:right;">R$ 32,90</td>
+                    </tr>
+                    <tr>
+                      <td>16:40</td>
+                      <td>Ônibus</td>
+                      <td><span class="tag">Transporte</span></td>
+                      <td style="text-align:right;">R$ 4,40</td>
+                    </tr>
+                    <tr>
+                      <td>13:05</td>
+                      <td>Almoço</td>
+                      <td><span class="tag tag--warn">Alimentação</span></td>
+                      <td style="text-align:right;">R$ 9,90</td>
+                    </tr>
+                    <tr>
+                      <td>10:12</td>
+                      <td>Café</td>
+                      <td><span class="tag tag--warn">Alimentação</span></td>
+                      <td style="text-align:right;">R$ 6,50</td>
+                    </tr>
+                    <tr>
+                      <td>08:20</td>
+                      <td>Farmácia</td>
+                      <td><span class="tag tag--danger">Saúde</span></td>
+                      <td style="text-align:right;">R$ 24,80</td>
+                    </tr>
+                  </tbody>
+                </table>
+              </div>
+            </div>
+          </div>
+
+          <!-- Right column: Add expense + Categories -->
+          <div class="card">
+            <div class="card__header">
+              <div>
+                <div class="card__title">Novo gasto</div>
+                <div class="card__subtitle">Registre rápido pra manter o controle</div>
+              </div>
+              <span class="tag tag--ok">Rápido</span>
+            </div>
+
+            <div class="card__body">
+              <form class="form" aria-label="Formulário de novo gasto">
+                <div class="form__row">
+                  <label class="field">
+                    <span class="field__label">Valor (R$)</span>
+                    <input class="input" type="number" step="0.01" placeholder="Ex.: 12,50" />
+                  </label>
+
+                  <label class="field">
+                    <span class="field__label">Categoria</span>
+                    <select class="select">
+                      <option>Alimentação</option>
+                      <option>Transporte</option>
+                      <option>Saúde</option>
+                      <option>Lazer</option>
+                      <option>Contas</option>
+                      <option>Outros</option>
+                    </select>
+                  </label>
+                </div>
+
+                <label class="field">
+                  <span class="field__label">Descrição</span>
+                  <input class="input" type="text" placeholder="Ex.: almoço, mercado, uber..." />
+                </label>
+
+                <div class="form__row">
+                  <label class="field">
+                    <span class="field__label">Data</span>
+                    <input class="input" type="date" value="2026-02-09" />
+                  </label>
+
+                  <label class="field">
+                    <span class="field__label">Hora</span>
+                    <input class="input" type="time" value="20:00" />
+                  </label>
+                </div>
+
+                <div class="form__actions">
+                  <button class="btn" type="reset">Limpar</button>
+                  <button class="btn btn--primary" type="button">Adicionar gasto</button>
+                </div>
+              </form>
+
+              <div class="sep"></div>
+
+              <div class="card__title" style="font-size:14px;">Por categoria (hoje)</div>
+              <div class="muted" style="font-size:13px; margin-top:4px;">Distribuição do total gasto</div>
+
+              <div class="cats" style="margin-top:12px;">
+                <div class="cat">
+                  <div class="cat__top">
+                    <div class="cat__name">Alimentação</div>
+                    <div class="cat__amount">R$ 42,00 • 54%</div>
+                  </div>
+                  <div class="bar" aria-label="Progresso Alimentação">
+                    <div class="bar__fill" style="--w: 54%;"></div>
+                  </div>
+                </div>
+
+                <div class="cat">
+                  <div class="cat__top">
+                    <div class="cat__name">Saúde</div>
+                    <div class="cat__amount">R$ 24,80 • 32%</div>
+                  </div>
+                  <div class="bar" aria-label="Progresso Saúde">
+                    <div class="bar__fill" style="--w: 32%;"></div>
+                  </div>
+                </div>
+
+                <div class="cat">
+                  <div class="cat__top">
+                    <div class="cat__name">Transporte</div>
+                    <div class="cat__amount">R$ 4,40 • 6%</div>
+                  </div>
+                  <div class="bar" aria-label="Progresso Transporte">
+                    <div class="bar__fill" style="--w: 6%;"></div>
+                  </div>
+                </div>
+
+                <div class="cat">
+                  <div class="cat__top">
+                    <div class="cat__name">Outros</div>
+                    <div class="cat__amount">R$ 7,30 • 8%</div>
+                  </div>
+                  <div class="bar" aria-label="Progresso Outros">
+                    <div class="bar__fill" style="--w: 8%;"></div>
+                  </div>
+                </div>
+              </div>
+
+              <div class="sep"></div>
+
+              <div class="muted" style="font-size:12px;">
+                Ao “Fechar dia”, a ferramenta pode gerar um resumo com total, principais categorias e lista final.
+              </div>
+            </div>
+          </div>
+        </section>
+      </div>
+    </main>
+  </div>
+</body>
+</html>
